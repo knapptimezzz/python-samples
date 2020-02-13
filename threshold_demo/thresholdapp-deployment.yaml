@@ -1,0 +1,91 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    group: demo
+    app: threshold-demo-app
+  name: threshold-demo-app
+  namespace: demo-apps
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: threshold-demo-app
+        group: demo
+    spec:
+      containers:
+      - image: threshold:1.1.1
+        imagePullPolicy: Never
+        name: threshold-demo-app
+        env:
+        # ----
+        # These parameters are for routes
+        # ----
+        - name: TRACE_ID
+          value: "threshold-app"
+        - name: INPUT_BINDING_KEY
+          value: "unfiltered-data"
+        - name: INPUT_QUEUE
+          value: "unfiltered-data"
+        - name: OUTPUT_BINDING_KEY
+          value: "threshold-app"
+        - name: AMQP_USERNAME
+          value: "admin"
+        - name: AMQP_PASSWORD
+          value: "Change11me"
+        - name: AMQP_HOSTNAME
+          value: "hiota-rabbitmq.hiota"
+        - name: AMQP_PORT
+          value: "5671"
+        - name: ALERT_BINDING_KEY
+          value: "hiota-alerts"
+        - name: ALERT_TRACE_ID
+          value: "hiota-alerts"
+        # ----
+        # These settigns are for app run configurations
+        # ----
+        - name: THRESHOLD_VALUE
+          value: "70.0"
+        - name: AMQP_DEBUG_BOOLEAN
+          value: "0"
+        - name: EXCHANGE_NAME
+          value: "hiota-exchange"
+        - name: DISCARD_ALERT_VALUE
+          value: "1"
+        - name: STORE_ALERTS
+          value: "1"
+        # change me for different severity, 0-unknown, 1-normal, 2-warning, 3-critical
+        - name: ALERT_SEVERITY
+          value: "2"
+        # ----
+        # Influx Connection Information
+        # ----
+        - name: DEMO_INFLUX_HOSTNAME
+          value: "influxdb.hiota"
+        - name: DEMO_INFLUX_PORT
+          value: "8086"
+        - name: INFLUX_USERNAME
+          value: "admin"
+        - name: INFLUX_PASSWORD
+          value: "Change11me"
+        # ----
+        # Data base storing configurations
+        # ----
+        - name: DATA_BASE_NAME
+          value: "testing_database"
+        - name: ALERTS_TABLE_NAME
+          value: "alertdata"
+        - name: SOURCE
+          value: "datapump"
+        - name: DATA_MODEL
+          value: "json"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      restartPolicy: Always

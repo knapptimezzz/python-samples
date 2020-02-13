@@ -1,0 +1,50 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    group: demo
+    app: dedupe-demo-app
+  name: dedupe-demo-app
+  namespace: demo-apps
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: dedupe-demo-app
+        group: demo
+    spec:
+      containers:
+      - image: localhost:32500/dedupe-demo:demo
+        imagePullPolicy: Never
+        name: dedupe-demo-app
+        env:
+        - name: TRACE_ID
+          value: "data_pump_1_route"
+        - name: INPUT_BINDING_KEY
+          value: "data_pump_destination"
+        - name: INPUT_QUEUE
+          value: "data_pump_destination"
+        - name: OUTPUT_BINDING_KEY
+          value: "data_pump_1_route"
+        - name: AMQP_USERNAME
+          value: "admin"
+        - name: AMQP_PASSWORD
+          value: "Change11me"
+        - name: AMQP_HOSTNAME
+          value: "hiota-rabbitmq.hiota"
+        - name: AMQP_PORT
+          value: "5671"
+        - name: DEBUG_BOOLEAN
+          value: "0"
+        - name: EXCHANGE_NAME
+          value: "hiota-exchange"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+      restartPolicy: Always
